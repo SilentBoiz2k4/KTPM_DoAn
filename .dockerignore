@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.nyc_output
+coverage
+*.log
+.DS_Store
+backend/node_modules
+backend/npm-debug.log
+backend/.env
+frontend/node_modules
+frontend/npm-debug.log
+frontend/.env

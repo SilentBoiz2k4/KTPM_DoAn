@@ -1,0 +1,53 @@
+services:
+  backend:
+    build: ./backend
+    container_name: ecommerce-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb+srv://2004tranbinhminh_db_user:23082004@cluster0.cjv4noq.mongodb.net/ecommerce?retryWrites=true&w=majority
+      - JWT_SECRET=a-strong-secret-for-jwt
+      - NODE_ENV=production
+      - PORT=5000
+      - PAYPAL_CLIENT_ID=AWQI0U61Gn5aqK_Hr0eX5fe4QJ3lXh840_o024o_tLR-UF24QHEKYSdyHb7TUXbnZ1khvoUj9HhdHs7J
+      - PAYPAL_CLIENT_SECRET=EKkYJ8GrIJMNzAveTYJCVbtlEgnetqL_ukJEcYJdYzNXQpvRWYko8eoGboEHhAaAXOL_34PZunGY7PXS
+      - CLOUDINARY_CLOUD_NAME=dcvqcqc8y
+      - CLOUDINARY_API_KEY=919479643726415
+      - CLOUDINARY_API_SECRET=mdDlRkhHP-NWPzDqmJxLTP5RLkM
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=http://localhost:5000
+    container_name: ecommerce-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:5.0
+    container_name: ecommerce-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=ecommerce
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
