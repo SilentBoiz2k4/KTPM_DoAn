@@ -30,6 +30,23 @@ export default function SigninScreen() {
       });
       ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
+      
+      // Load cart from database after login
+      try {
+        const { data: cartData } = await Axios.get('/api/cart', {
+          headers: { authorization: `Bearer ${data.token}` },
+        });
+        
+        // If cart exists in database, load it
+        if (cartData && cartData.cartItems && cartData.cartItems.length > 0) {
+          ctxDispatch({ type: 'CART_LOAD_FROM_DB', payload: cartData });
+        }
+        // If no cart in DB, start with empty cart (don't sync from localStorage to prevent cart from previous user)
+      } catch (cartErr) {
+        console.error('Failed to load cart from database:', cartErr);
+        // Continue even if cart loading fails - start with empty cart
+      }
+      
       navigate(redirect || '/');
     } catch (err) {
       toast.error(getError(err));

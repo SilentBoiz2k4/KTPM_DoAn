@@ -3,6 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Product from '../models/productModel.js';
+import Cart from '../models/cartModel.js';
 import { isAuth, isAdmin } from '../utils.js';
 
 const orderRouter = express.Router();
@@ -119,6 +120,10 @@ orderRouter.put(
       };
 
       const updatedOrder = await order.save();
+      
+      // Clear cart after successful payment
+      await Cart.findOneAndDelete({ user: order.user });
+      
       res.send({ message: 'Order Paid', order: updatedOrder });
     } else {
       res.status(404).send({ message: 'Order Not Found' });
@@ -147,6 +152,8 @@ orderRouter.put(
             update_time: Date.now().toString(),
             email_address: order.shippingAddress.email || '',
           };
+          // Clear cart after COD payment is marked as paid
+          await Cart.findOneAndDelete({ user: order.user });
         }
       } else if (newStatus === 'Cancelled') {
         // Handle cancellation logic if needed

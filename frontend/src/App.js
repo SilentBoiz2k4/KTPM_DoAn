@@ -378,9 +378,7 @@ export default function App() {
 
   const signoutHandler = () => {
     ctxDispatch({ type: "USER_SIGNOUT" });
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("shippingAddress");
-    localStorage.removeItem("paymentMethod");
+    // USER_SIGNOUT action already handles clearing localStorage
   };
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
@@ -397,6 +395,43 @@ export default function App() {
     };
     fetchCategories();
   }, []);
+
+  // Load cart from database when app loads if user is logged in
+  useEffect(() => {
+    const loadCartFromDB = async () => {
+      if (userInfo && userInfo.token) {
+        try {
+          const { data: cartData } = await axios.get('/api/cart', {
+            headers: { authorization: `Bearer ${userInfo.token}` },
+          });
+          
+          // If cart exists in database and has items, load it
+          if (cartData && cartData.cartItems && cartData.cartItems.length > 0) {
+            ctxDispatch({ type: 'CART_LOAD_FROM_DB', payload: cartData });
+          } else {
+            // If no cart in DB, clear localStorage cart and start with empty cart
+            // This ensures we don't show cart from a different user or previous session
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('shippingAddress');
+            localStorage.removeItem('paymentMethod');
+            ctxDispatch({ 
+              type: 'CART_LOAD_FROM_DB', 
+              payload: { cartItems: [], shippingAddress: {}, paymentMethod: '' } 
+            });
+          }
+        } catch (err) {
+          // If error loading cart, clear localStorage and start with empty cart
+          console.error('Failed to load cart from database:', err);
+          localStorage.removeItem('cartItems');
+          localStorage.removeItem('shippingAddress');
+          localStorage.removeItem('paymentMethod');
+        }
+      }
+      // If user is not logged in, keep localStorage cart (for guest users)
+      // It will be cleared when user logs out or when they log in (to prevent mixing carts)
+    };
+    loadCartFromDB();
+  }, [userInfo, ctxDispatch]);
 
   return (
     <BrowserRouter>

@@ -70,10 +70,10 @@ export default function ShippingAddressScreen() {
           <Form.Group className="mb-3" controlId="fullName">
             <Form.Label>Full Name</Form.Label>
             <Form.Control
+              type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              pattern="[A-Za-z]+ [A-Za-z]+"
-              title="Enter first and last name"
+              placeholder="Enter your full name"
               required
             />
           </Form.Group>
@@ -110,21 +110,12 @@ export default function ShippingAddressScreen() {
           <Form.Group className="mb-3" controlId="country">
             <Form.Label>Country</Form.Label>
             <Form.Control
-              as="select"
+              type="text"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
+              placeholder="Enter country name"
               required
-            >
-              <option value="">Select a country...</option>
-              <option value="I">Israel</option>
-              <option value="USA">United States</option>
-              <option value="NV">NeverLand</option>
-              <option value="HW">Hogworts</option>
-              <option value="Nar">Narnia</option>
-              <option value="SP">South Park</option>
-              <option value="WOW">World Of Warcraft</option>
-              <option value="LOL">Leauge Of Legends</option>
-            </Form.Control>
+            />
           </Form.Group>
           <div className="mb-3">
             <Button variant="primary" type="submit">

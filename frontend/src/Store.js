@@ -4,6 +4,7 @@
 // Defines a context (Store) and a provider (StoreProvider) that wraps the entire application. 
 
 import { createContext, useReducer } from 'react';
+import Axios from 'axios';
 
 // Creates a React context named 'Store'. Contexts are used to share values like state and functions throughout a component tree.
 // allows components to consume the global state using 'useContext(Store)'. 
@@ -64,6 +65,24 @@ function reducer(state, action) {
         : [...state.cart.cartItems, newItem]; //using the spread (...) operator to create a new array by combining the existing items in state.cart.cartItems 
         // (represents the current array of items in the shopping cart), with a new item (newItem). 
       localStorage.setItem ('cartItems', JSON.stringify(cartItems));     // parameters - key is the local storage, and the string value to save in this key
+      
+      // Sync with backend if user is logged in
+      if (state.userInfo) {
+        Axios.post(
+          '/api/cart',
+          {
+            cartItems,
+            shippingAddress: state.cart.shippingAddress,
+            paymentMethod: state.cart.paymentMethod,
+          },
+          {
+            headers: { authorization: `Bearer ${state.userInfo.token}` },
+          }
+        ).catch((err) => {
+          console.error('Failed to sync cart to backend:', err);
+        });
+      }
+      
       // Updates the cart property with a new object using the spread operator to maintain its existing properties, and updates the cartItems property with the new array.
       return { ...state, cart: { ...state.cart, cartItems } };
 
@@ -75,6 +94,24 @@ function reducer(state, action) {
       );
       // Saves the updated cartItems array to local storage after converting it to a JSON string.
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      
+      // Sync with backend if user is logged in
+      if (state.userInfo) {
+        Axios.post(
+          '/api/cart',
+          {
+            cartItems,
+            shippingAddress: state.cart.shippingAddress,
+            paymentMethod: state.cart.paymentMethod,
+          },
+          {
+            headers: { authorization: `Bearer ${state.userInfo.token}` },
+          }
+        ).catch((err) => {
+          console.error('Failed to sync cart to backend:', err);
+        });
+      }
+      
       // Updates the state with the new cartItems.
       return { ...state, cart: { ...state.cart, cartItems } };
     }
@@ -89,7 +126,33 @@ function reducer(state, action) {
       // ", cart: { ...state.cart, cartItems: [] }": updating the 'cart' property in the new state object. 
         // "{ ...state.cart }": uses the spread operator to create a shallow copy of the existing 'cart' object within the state. Again, this ensures that the original cart object is not modified directly.
         // "cartItems: []": updates the 'cartItems' property of the cart object by assigning it a new empty array ([]). This essentially clears the items in the shopping cart.
+      localStorage.removeItem('cartItems');
       return { ...state, cart: { ...state.cart, cartItems: [] } };
+    
+    // Load cart from database
+    case 'CART_LOAD_FROM_DB':
+      const dbCart = action.payload;
+      const loadedCartItems = dbCart.cartItems || [];
+      const loadedShippingAddress = dbCart.shippingAddress || {};
+      const loadedPaymentMethod = dbCart.paymentMethod || '';
+      
+      // Update localStorage
+      localStorage.setItem('cartItems', JSON.stringify(loadedCartItems));
+      if (Object.keys(loadedShippingAddress).length > 0) {
+        localStorage.setItem('shippingAddress', JSON.stringify(loadedShippingAddress));
+      }
+      if (loadedPaymentMethod) {
+        localStorage.setItem('paymentMethod', loadedPaymentMethod);
+      }
+      
+      return {
+        ...state,
+        cart: {
+          cartItems: loadedCartItems,
+          shippingAddress: loadedShippingAddress,
+          paymentMethod: loadedPaymentMethod,
+        },
+      };
 
 
 
@@ -100,12 +163,17 @@ function reducer(state, action) {
    
 
     case 'USER_SIGNOUT':
+      // Clear cart from localStorage when signing out to prevent cart from previous user showing
+      // Cart is still saved in database and will be loaded when user logs in again
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('cartItems');
+      localStorage.removeItem('shippingAddress');
+      localStorage.removeItem('paymentMethod');
       return {
         ...state,
         userInfo: null, // reset the userInfo property in the new state to null, indicating that there is no user information after signing out.
         cart: {
-          //clears the contents.
-          cartItems: [],          // cart sets to empty array
+          cartItems: [],
           shippingAddress: {},
           paymentMethod: '',
         },
@@ -114,6 +182,25 @@ function reducer(state, action) {
 
     //save the shipping address in the local storage
     case 'SAVE_SHIPPING_ADDRESS':
+      localStorage.setItem('shippingAddress', JSON.stringify(action.payload));
+      
+      // Sync with backend if user is logged in
+      if (state.userInfo) {
+        Axios.post(
+          '/api/cart',
+          {
+            cartItems: state.cart.cartItems,
+            shippingAddress: action.payload,
+            paymentMethod: state.cart.paymentMethod,
+          },
+          {
+            headers: { authorization: `Bearer ${state.userInfo.token}` },
+          }
+        ).catch((err) => {
+          console.error('Failed to sync cart to backend:', err);
+        });
+      }
+      
       return {
         ...state,
         cart: {   
@@ -125,6 +212,25 @@ function reducer(state, action) {
 
     //save payment method in local storage
     case 'SAVE_PAYMENT_METHOD':
+      localStorage.setItem('paymentMethod', action.payload);
+      
+      // Sync with backend if user is logged in
+      if (state.userInfo) {
+        Axios.post(
+          '/api/cart',
+          {
+            cartItems: state.cart.cartItems,
+            shippingAddress: state.cart.shippingAddress,
+            paymentMethod: action.payload,
+          },
+          {
+            headers: { authorization: `Bearer ${state.userInfo.token}` },
+          }
+        ).catch((err) => {
+          console.error('Failed to sync cart to backend:', err);
+        });
+      }
+      
       return {
         ...state,
         cart: {

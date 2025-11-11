@@ -5,6 +5,7 @@ import seedRouter from "./routes/seedRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
+import cartRouter from "./routes/cartRoutes.js";
 import path from "path";
 import multer from "multer";
 import cloudinary from "./cloudinary.js";
@@ -78,6 +79,7 @@ app.use("/api/seed", seedRouter);
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/cart", cartRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

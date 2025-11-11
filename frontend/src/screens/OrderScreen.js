@@ -36,7 +36,7 @@ function reducer(state, action) {
 }
 
 export default function OrderScreen() {
-  const { state } = useContext(Store);
+  const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
   const params = useParams();
@@ -75,6 +75,13 @@ export default function OrderScreen() {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'PAY_SUCCESS', payload: data });
+        
+        // Clear cart after successful payment (backend already clears DB cart)
+        ctxDispatch({ type: 'CART_CLEAR' });
+        localStorage.removeItem('cartItems');
+        localStorage.removeItem('shippingAddress');
+        localStorage.removeItem('paymentMethod');
+        
         toast.success('Order is paid');
       } catch (err) {
         dispatch({ type: 'PAY_FAIL', payload: getError(err) });

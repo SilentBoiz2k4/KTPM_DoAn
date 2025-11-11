@@ -65,9 +65,8 @@ export default function PlaceOrderScreen() {
           },
         }
       );
-      ctxDispatch({ type: 'CART_CLEAR' });
+      // Don't clear cart here - it will be cleared after payment is successful
       dispatch({ type: 'CREATE_SUCCESS' });
-      localStorage.removeItem('cartItems');
       navigate(`/order/${data.order._id}`);
     } catch (err) {
       dispatch({ type: 'CREATE_FAIL' });

@@ -36,6 +36,11 @@ export default function SignupScreen() {
       });
       ctxDispatch({ type: "USER_SIGNIN", payload: data });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      
+      // For new signup, start with empty cart
+      // Don't sync localStorage cart to prevent cart from previous user or guest session
+      // User can add items to cart after signing up
+      
       navigate(redirect || "/");
     } catch (err) {
       toast.error(getError(err));
