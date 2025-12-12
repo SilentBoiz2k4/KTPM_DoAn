@@ -46,3 +46,28 @@
   padding-right: 100px;
 }
 
+
+/* Admin Layout Styles */
+.admin-navbar {
+  background-color: #1a1a2e !important;
+}
+
+.admin-navbar .navbar-brand {
+  font-weight: bold;
+  color: #eee !important;
+}
+
+.admin-navbar .nav-link {
+  color: #ccc !important;
+  transition: color 0.2s;
+}
+
+.admin-navbar .nav-link:hover {
+  color: #fff !important;
+}
+
+.admin-navbar .nav-link.active {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
