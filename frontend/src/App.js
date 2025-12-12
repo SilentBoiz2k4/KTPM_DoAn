@@ -46,8 +46,12 @@ function AppContent() {
   const { cart, userInfo } = state;
   const location = useLocation();
 
-  // Check if current path is admin page
+  // Check if current path is admin page or if admin user is on any page
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isAdmin = userInfo && userInfo.isAdmin;
+  
+  // Hide shop UI for admin users (except when they explicitly view shop)
+  const hideShopUI = isAdminPage || isAdmin;
 
   const signoutHandler = () => {
     ctxDispatch({ type: "USER_SIGNOUT" });
@@ -102,7 +106,7 @@ function AppContent() {
   return (
     <div
       className={
-        sidebarIsOpen && !isAdminPage
+        sidebarIsOpen && !hideShopUI
           ? "d-flex flex-column site-container active-cont"
           : "d-flex flex-column site-container"
       }
@@ -111,8 +115,8 @@ function AppContent() {
       <header>
         <Navbar className="navbar-custom" variant="dark" expand="lg">
           <Container>
-            {/* Hide sidebar button on admin pages */}
-            {!isAdminPage && (
+            {/* Hide sidebar button for admin users */}
+            {!hideShopUI && (
               <Button
                 variant="light"
                 className="me-3"
@@ -121,18 +125,18 @@ function AppContent() {
                 <i className="fas fa-bars"></i>
               </Button>
             )}
-            <LinkContainer to="/">
+            <LinkContainer to={isAdmin ? "/admin/dashboard" : "/"}>
               <Navbar.Brand className="brand-name">Anastacia</Navbar.Brand>
             </LinkContainer>
 
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              {/* Hide SearchBox on admin pages */}
-              {!isAdminPage && <SearchBox />}
+              {/* Hide SearchBox for admin users */}
+              {!hideShopUI && <SearchBox />}
 
               <Nav className="ml-auto">
-                {/* Hide shop navigation on admin pages */}
-                {!isAdminPage && (
+                {/* Hide shop navigation for admin users */}
+                {!hideShopUI && (
                   <>
                     <LinkContainer to="/about" className="nav-link">
                       <Navbar.Brand>About Us</Navbar.Brand>
@@ -159,9 +163,12 @@ function AppContent() {
                       <NavDropdown.Item> User Profile </NavDropdown.Item>
                     </LinkContainer>
 
-                    <LinkContainer to="/orderhistory">
-                      <NavDropdown.Item> Order History </NavDropdown.Item>
-                    </LinkContainer>
+                    {/* Hide Order History for admin users */}
+                    {!isAdmin && (
+                      <LinkContainer to="/orderhistory">
+                        <NavDropdown.Item> Order History </NavDropdown.Item>
+                      </LinkContainer>
+                    )}
 
                     <NavDropdown.Divider />
 
@@ -197,18 +204,6 @@ function AppContent() {
                     <LinkContainer to="/admin/users">
                       <NavDropdown.Item>Users</NavDropdown.Item>
                     </LinkContainer>
-
-                    {/* Show link to shop when on admin page */}
-                    {isAdminPage && (
-                      <>
-                        <NavDropdown.Divider />
-                        <LinkContainer to="/">
-                          <NavDropdown.Item>
-                            <i className="fas fa-store me-2"></i>View Shop
-                          </NavDropdown.Item>
-                        </LinkContainer>
-                      </>
-                    )}
                   </NavDropdown>
                 )}
               </Nav>
@@ -217,8 +212,8 @@ function AppContent() {
         </Navbar>
       </header>
 
-      {/* Hide sidebar on admin pages */}
-      {!isAdminPage && (
+      {/* Hide sidebar for admin users */}
+      {!hideShopUI && (
         <div
           className={
             sidebarIsOpen
