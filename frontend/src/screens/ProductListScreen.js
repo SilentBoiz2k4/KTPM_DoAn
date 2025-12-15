@@ -163,11 +163,12 @@ export default function ProductListScreen() {
           <table className="table table-striped">
             <thead className="thead-products">
               <tr>
-                <th>ID</th>
+                <th>IMAGE</th>
                 <th>NAME</th>
                 <th>PRICE</th>
                 <th>CATEGORY</th>
                 <th>BRAND</th>
+                <th>STOCK</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
@@ -175,15 +176,23 @@ export default function ProductListScreen() {
             <tbody>
               {products.map((product) => (
                 <tr key={product._id}>
-                  <td>{product._id}</td>
+                  <td>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                    />
+                  </td>
                   <td>{product.name}</td>
-                  <td>{product.price}</td>
+                  <td>${product.price}</td>
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
+                  <td>{product.countInStock}</td>
                   <td>
                     <Button
                       type="button"
                       variant="light"
+                      size="sm"
                       onClick={() => navigate(`/admin/product/${product._id}`)}
                     >
                       Edit
@@ -192,6 +201,7 @@ export default function ProductListScreen() {
                     <Button
                       type="button"
                       variant="light"
+                      size="sm"
                       onClick={() => deleteHandler(product)}
                     >
                       Delete

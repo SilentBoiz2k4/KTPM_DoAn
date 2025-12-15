@@ -11,6 +11,7 @@ productRouter.get('/', async (req, res) => {
 });
 
 const PAGE_SIZE = 3;
+const ADMIN_PAGE_SIZE = 10;
 
 productRouter.get(
   '/admin',
@@ -19,7 +20,7 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const { query } = req;
     const page = query.page || 1;
-    const pageSize = query.pageSize || PAGE_SIZE;
+    const pageSize = query.pageSize || ADMIN_PAGE_SIZE;
 
     const products = await Product.find()
       .skip(pageSize * (page - 1))
