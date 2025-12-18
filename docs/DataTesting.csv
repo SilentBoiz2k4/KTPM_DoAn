@@ -1,0 +1,239 @@
+﻿Test Case ID,Module,Test Case Name,Description,Preconditions,Test Steps,Test Data,Expected Result,Priority,Test Type
+TC_DATA_OM_001,Schema,Order schema validation,Verify order schema enforces required fields,Database connected,"1. Attempt to create order without required fields
+2. Verify validation error
+3. Check error message",Order missing orderItems,"Validation error thrown
+Order not created",High,Data
+TC_DATA_OM_002,Schema,Field data types validation,Verify correct data types enforced,Database connected,"1. Attempt to insert wrong data types
+2. Verify type validation
+3. Check error handling",String for price field,"Type validation error
+Data rejected",High,Data
+TC_DATA_OM_003,Schema,Status enum validation,Verify only valid status values accepted,"Database connected
+Order exists","1. Attempt to set invalid status
+2. Verify enum validation
+3. Check error message","Status: ""InvalidStatus""","Enum validation error
+Status not updated",High,Data
+TC_DATA_OM_004,Schema,Default values assignment,Verify default values set on creation,Database connected,"1. Create order without optional fields
+2. Retrieve order
+3. Verify default values","Order without isPaid, isDelivered","isPaid: false
+isDelivered: false
+status: Pending",High,Data
+TC_DATA_OM_005,Schema,Timestamps auto-generation,Verify timestamps created automatically,Database connected,"1. Create new order
+2. Retrieve order
+3. Check createdAt and updatedAt",New order data,createdAt and updatedAt populated with current timestamp,Medium,Data
+TC_DATA_OM_006,References,Product reference validation,Verify product ObjectId references valid product,"Database connected
+Products exist","1. Create order with product reference
+2. Verify reference valid
+3. Check product exists",Valid product ObjectId,"Order created successfully
+Product reference valid",High,Data
+TC_DATA_OM_007,References,Invalid product reference,Verify invalid product reference rejected,Database connected,"1. Attempt order with invalid product ID
+2. Verify validation
+3. Check error handling",Non-existent product ID,Reference validation error or order created with invalid ref,Medium,Data
+TC_DATA_OM_008,Order Items,Order items validation,Verify all item fields required,Database connected,"1. Create order with incomplete items
+2. Verify validation
+3. Check error message",Item missing name field,"Validation error
+Order not created",High,Data
+TC_DATA_OM_009,Order Items,Quantity validation,Verify positive quantity required,Database connected,"1. Attempt order with zero/negative quantity
+2. Verify validation
+3. Check error handling",Quantity: -1 or 0,"Validation error
+Order rejected",High,Data
+TC_DATA_OM_010,Order Items,Price validation,Verify positive price required,Database connected,"1. Attempt order with negative price
+2. Verify validation
+3. Check error handling",Price: -10.00,"Validation error
+Order rejected",High,Data
+TC_DATA_OM_011,Shipping,Shipping address validation,Verify all address fields required,Database connected,"1. Create order without address field
+2. Verify validation
+3. Check error message",Missing city field,"Validation error
+Order not created",High,Data
+TC_DATA_OM_012,Shipping,Address field lengths,Verify string length constraints,Database connected,"1. Create order with very long address
+2. Verify handling
+3. Check data stored",Address: 500 characters,Data stored or length error,Medium,Data
+TC_DATA_OM_013,Payment,Payment method validation,Verify payment method stored,Database connected,"1. Create order with payment method
+2. Retrieve order
+3. Verify payment method","paymentMethod: ""PayPal""",Payment method stored correctly,High,Data
+TC_DATA_OM_014,Payment,Payment result structure,Verify payment result fields,"Database connected
+Order paid","1. Update order with payment result
+2. Retrieve order
+3. Verify all fields present",Payment result object,"All fields: id, status, update_time, email_address present",High,Data
+TC_DATA_OM_015,Calculations,Items price calculation,Verify items price accuracy,Database connected,"1. Create order with multiple items
+2. Calculate expected itemsPrice
+3. Compare with stored value","2 items: $10 x 2, $20 x 1",itemsPrice = $40.00,High,Data
+TC_DATA_OM_016,Calculations,Total price calculation,Verify total price accuracy,Database connected,"1. Create order with all prices
+2. Calculate expected total
+3. Compare with stored value","items: $40, shipping: $10, tax: $5",totalPrice = $55.00,High,Data
+TC_DATA_OM_017,Calculations,Price precision,Verify decimal precision,Database connected,"1. Create order with precise prices
+2. Retrieve order
+3. Verify precision maintained",Price: 19.999,Stored as 19.99 or 20.00,Medium,Data
+TC_DATA_OM_018,User Reference,User ObjectId validation,Verify user reference valid,"Database connected
+User exists","1. Create order with user reference
+2. Verify reference valid
+3. Check user exists",Valid user ObjectId,Order created with valid user reference,High,Data
+TC_DATA_OM_019,User Reference,User population query,Verify user data populated,"Database connected
+Order with user","1. Query order with populate('user', 'name')
+2. Verify user data returned
+3. Check name field",Order ID,User object with name field returned,High,Data
+TC_DATA_OM_020,User Reference,Deleted user handling,Verify order persists after user deletion,"Database connected
+Order exists","1. Delete user
+2. Query order
+3. Verify order still exists",User with orders,"Order exists
+User reference null or deleted",Medium,Data
+TC_DATA_OM_021,Relationships,One user multiple orders,Verify one-to-many relationship,"Database connected
+User exists","1. Create multiple orders for one user
+2. Query orders by user
+3. Verify all returned","User ID
+3 orders",All 3 orders returned for user,High,Data
+TC_DATA_OM_022,Relationships,Order with multiple products,Verify many-to-many relationship,"Database connected
+Products exist","1. Create order with multiple products
+2. Retrieve order
+3. Verify all products referenced",5 different products,Order contains 5 product references,High,Data
+TC_DATA_OM_023,Status,Status transition,Verify status can change,"Database connected
+Order exists","1. Update order status
+2. Retrieve order
+3. Verify new status",Pending → Processing,Status updated to Processing,High,Data
+TC_DATA_OM_024,Status,Delivered flag sync,Verify isDelivered flag set,"Database connected
+Order exists","1. Update status to Delivered
+2. Retrieve order
+3. Verify isDelivered true",Status: Delivered,isDelivered: true,High,Data
+TC_DATA_OM_025,Status,Delivered timestamp,Verify deliveredAt timestamp,"Database connected
+Order exists","1. Update status to Delivered
+2. Retrieve order
+3. Verify deliveredAt set",Status: Delivered,deliveredAt contains timestamp,High,Data
+TC_DATA_OM_026,Payment,Payment flag sync,Verify isPaid flag set,"Database connected
+Order exists","1. Mark order as paid
+2. Retrieve order
+3. Verify isPaid true",Payment completed,isPaid: true,High,Data
+TC_DATA_OM_027,Payment,Payment timestamp,Verify paidAt timestamp,"Database connected
+Order exists","1. Mark order as paid
+2. Retrieve order
+3. Verify paidAt set",Payment completed,paidAt contains timestamp,High,Data
+TC_DATA_OM_028,COD,COD payment on delivery,Verify COD marked paid on delivery,"Database connected
+COD order","1. Update COD order to Delivered
+2. Retrieve order
+3. Verify isPaid true","COD order
+Status: Delivered","isPaid: true
+paidAt set",High,Data
+TC_DATA_OM_029,COD,COD payment result,Verify COD payment result populated,"Database connected
+COD order","1. Update COD order to Delivered
+2. Retrieve order
+3. Check paymentResult",COD order delivered,"paymentResult.id: ""COD""
+paymentResult.status: ""PAID""",High,Data
+TC_DATA_OM_030,Cart,Cart deletion after PayPal payment,Verify cart deleted after payment,"Database connected
+Order with cart","1. Mark order as paid (PayPal)
+2. Query cart by user
+3. Verify cart deleted","PayPal order
+User cart",Cart document deleted from database,High,Data
+TC_DATA_OM_031,Cart,Cart deletion after COD delivery,Verify cart deleted on COD delivery,"Database connected
+COD order with cart","1. Mark COD order as Delivered
+2. Query cart by user
+3. Verify cart deleted","COD order
+User cart",Cart document deleted from database,High,Data
+TC_DATA_OM_032,Validation,Invalid order creation,Verify invalid data rejected,Database connected,"1. Attempt to create invalid order
+2. Verify validation error
+3. Check no data inserted",Missing required fields,"Validation error
+No order created",High,Data
+TC_DATA_OM_033,Validation,Invalid status update,Verify invalid status rejected,"Database connected
+Order exists","1. Attempt invalid status update
+2. Verify validation error
+3. Check status unchanged","Status: ""Random""","Validation error
+Status not changed",High,Data
+TC_DATA_OM_034,Validation,Negative price rejection,Verify negative prices rejected,Database connected,"1. Attempt order with negative price
+2. Verify validation
+3. Check error message",totalPrice: -50,"Validation error
+Order rejected",High,Data
+TC_DATA_OM_035,Boundary,Zero quantity handling,Verify zero quantity rejected,Database connected,"1. Attempt order with quantity 0
+2. Verify validation
+3. Check error handling",Quantity: 0,Validation error or business logic error,Medium,Data
+TC_DATA_OM_036,Boundary,Large price values,Verify large prices handled,Database connected,"1. Create order with very large price
+2. Retrieve order
+3. Verify price stored correctly",Price: 999999.99,Price stored accurately,Medium,Data
+TC_DATA_OM_037,Boundary,Maximum items in order,Verify many items handled,Database connected,"1. Create order with 100 items
+2. Retrieve order
+3. Verify all items stored",100 order items,All items stored and retrieved,Low,Data
+TC_DATA_OM_038,Strings,Empty string validation,Verify empty strings rejected,Database connected,"1. Attempt order with empty required string
+2. Verify validation
+3. Check error message","fullName: """"","Validation error
+Order rejected",Medium,Data
+TC_DATA_OM_039,Strings,Long string handling,Verify long strings handled,Database connected,"1. Create order with very long address
+2. Retrieve order
+3. Verify data integrity",Address: 1000 chars,Data stored or truncated appropriately,Low,Data
+TC_DATA_OM_040,Strings,Special characters,Verify special characters handled,Database connected,"1. Create order with special chars in address
+2. Retrieve order
+3. Verify characters preserved",Address with @#$%&,Special characters stored correctly,Low,Data
+TC_DATA_OM_041,Aggregation,Total orders count,Verify order count aggregation,"Database connected
+Multiple orders","1. Run aggregation query
+2. Count orders manually
+3. Compare results",50 orders in DB,Aggregation returns 50,High,Data
+TC_DATA_OM_042,Aggregation,Total sales sum,Verify sales sum aggregation,"Database connected
+Multiple orders","1. Run aggregation query
+2. Calculate sum manually
+3. Compare results",Orders with various prices,Aggregation sum matches manual calculation,High,Data
+TC_DATA_OM_043,Aggregation,Daily orders grouping,Verify date grouping,"Database connected
+Orders from multiple days","1. Run daily orders aggregation
+2. Verify grouping by date
+3. Check date format",Orders from 5 different days,5 groups with correct dates,High,Data
+TC_DATA_OM_044,Aggregation,Daily sales calculation,Verify daily sales sum,"Database connected
+Orders from multiple days","1. Run daily sales aggregation
+2. Calculate daily sums manually
+3. Compare results",Multiple orders per day,Daily sums match manual calculation,High,Data
+TC_DATA_OM_045,Aggregation,Date sorting in aggregation,Verify sort order,"Database connected
+Orders from multiple days","1. Run daily orders aggregation
+2. Check sort order
+3. Verify ascending by date",Unsorted orders,Results sorted by date ascending,Medium,Data
+TC_DATA_OM_046,Aggregation,Category grouping,Verify product category grouping,"Database connected
+Products in categories","1. Run category aggregation
+2. Verify grouping
+3. Check counts",Products in 3 categories,3 groups with correct counts,High,Data
+TC_DATA_OM_047,Aggregation,User count aggregation,Verify user count,"Database connected
+Multiple users","1. Run user count aggregation
+2. Count users manually
+3. Compare results",20 users in DB,Aggregation returns 20,Medium,Data
+TC_DATA_OM_048,CRUD,Create order operation,Verify order creation,Database connected,"1. Create new order
+2. Retrieve order by ID
+3. Verify all fields",Complete order data,Order created with all fields correct,High,Data
+TC_DATA_OM_049,CRUD,Read order operation,Verify order retrieval,"Database connected
+Order exists","1. Query order by ID
+2. Verify data returned
+3. Check all fields",Order ID,Order retrieved with correct data,High,Data
+TC_DATA_OM_050,CRUD,Update order operation,Verify order update,"Database connected
+Order exists","1. Update order fields
+2. Retrieve order
+3. Verify changes saved","Order ID
+New status","Order updated successfully
+updatedAt changed",High,Data
+TC_DATA_OM_051,CRUD,Delete cart operation,Verify cart deletion,"Database connected
+Cart exists","1. Delete cart by user
+2. Query cart
+3. Verify not found",User ID,Cart deleted successfully,High,Data
+TC_DATA_OM_052,Query,Find all orders,Verify find all query,"Database connected
+Multiple orders","1. Execute find() query
+2. Count results
+3. Verify all returned",30 orders in DB,All 30 orders returned,High,Data
+TC_DATA_OM_053,Query,Find order by ID,Verify findById query,"Database connected
+Order exists","1. Execute findById()
+2. Verify correct order returned
+3. Check all fields",Valid order ID,Correct order returned,High,Data
+TC_DATA_OM_054,Query,Find orders by user,Verify user filter query,"Database connected
+User with orders","1. Execute find({ user: userId })
+2. Verify all user's orders returned
+3. Check no other orders",User ID,Only user's orders returned,High,Data
+TC_DATA_OM_055,Index,Query performance with index,Verify index usage,"Database connected
+Indexes created","1. Run query on indexed field
+2. Check query execution plan
+3. Verify index used",Query on user field,Index used for query,Medium,Data
+TC_DATA_OM_056,Index,User field index,Verify user index exists,Database connected,"1. Check database indexes
+2. Verify user field indexed
+3. Test query performance",Order collection,User field has index,Medium,Data
+TC_DATA_OM_057,Index,CreatedAt index,Verify timestamp index,Database connected,"1. Check database indexes
+2. Verify createdAt indexed
+3. Test sort performance",Order collection,createdAt field has index,Medium,Data
+TC_DATA_OM_058,Security,Payment data security,Verify sensitive data handling,"Database connected
+Order with payment","1. Retrieve order
+2. Check payment data
+3. Verify appropriate storage",Order with payment result,Payment data stored securely,High,Data
+TC_DATA_OM_059,Security,Admin data access,Verify admin can access all orders,"Database connected
+Admin user","1. Query all orders as admin
+2. Verify all returned
+3. Check authorization",Admin credentials,All orders accessible,High,Data
+TC_DATA_OM_060,Security,User data isolation,Verify user sees only own orders,"Database connected
+Regular user","1. Query orders as user
+2. Verify only user's orders
+3. Check authorization",User credentials,Only user's orders returned,High,Data

@@ -1,0 +1,200 @@
+﻿Test Case ID,Module,Test Case Name,Description,Preconditions,Test Steps,Test Data,Expected Result,Priority,Test Type
+TC_SEC_OM_001,Auth,Valid JWT token authentication,Verify valid token accepted,User logged in,"1. Generate valid JWT token
+2. Send request with token
+3. Verify access granted",Valid user credentials,"Request successful
+User authenticated",High,Security
+TC_SEC_OM_002,Auth,Invalid JWT token rejection,Verify invalid token rejected,None,"1. Create invalid token
+2. Send request with invalid token
+3. Verify rejection",Malformed token,"401 error
+Message: ""Invalid Token""",High,Security
+TC_SEC_OM_003,Auth,Expired JWT token rejection,Verify expired token rejected,Token expired,"1. Use expired token (>30 days)
+2. Send request
+3. Verify rejection",Expired token,"401 error
+Token rejected",High,Security
+TC_SEC_OM_004,Auth,Missing authorization header,Verify request without token rejected,None,"1. Send request without Authorization header
+2. Verify rejection",No token,"401 error
+Message: ""No Token""",High,Security
+TC_SEC_OM_005,Auth,Malformed authorization header,Verify malformed header rejected,None,"1. Send request with malformed header
+2. Verify rejection","Header: ""InvalidFormat token""","401 error
+Request rejected",High,Security
+TC_SEC_OM_006,Auth,Token signature validation,Verify token signature checked,None,"1. Create token with wrong secret
+2. Send request
+3. Verify rejection",Token with wrong signature,"401 error
+Invalid signature",High,Security
+TC_SEC_OM_007,Auth,Bearer token format,Verify Bearer format required,User logged in,"1. Send token without ""Bearer "" prefix
+2. Verify handling",Token without Bearer,Token extraction fails or error,Medium,Security
+TC_SEC_OM_008,Auth,Token in request body,Verify token only accepted in header,None,"1. Send token in request body
+2. Verify rejection",Token in body,"401 error
+No token in header",Medium,Security
+TC_SEC_OM_009,AuthZ,Admin access with isAdmin=true,Verify admin user can access admin endpoints,Admin logged in,"1. Login as admin
+2. Access /api/orders
+3. Verify access granted",Admin credentials,"Access granted
+Orders returned",High,Security
+TC_SEC_OM_010,AuthZ,Non-admin access rejection,Verify non-admin rejected from admin endpoints,Non-admin logged in,"1. Login as regular user
+2. Attempt /api/orders
+3. Verify rejection",Non-admin credentials,"401 error
+Message: ""Invalid Admin Token""",High,Security
+TC_SEC_OM_011,AuthZ,Missing isAdmin flag,Verify user without isAdmin rejected,User without isAdmin,"1. Login as user
+2. Attempt admin endpoint
+3. Verify rejection",User without isAdmin,"401 error
+Access denied",High,Security
+TC_SEC_OM_012,AuthZ,Admin order list access,Verify only admin can list all orders,Admin and user exist,"1. Attempt GET /api/orders as non-admin
+2. Verify rejection
+3. Attempt as admin
+4. Verify success",Admin and user tokens,"Non-admin: 401
+Admin: Success",High,Security
+TC_SEC_OM_013,AuthZ,Admin order summary access,Verify only admin can access summary,Admin and user exist,"1. Attempt GET /api/orders/summary as non-admin
+2. Verify rejection
+3. Attempt as admin
+4. Verify success",Admin and user tokens,"Non-admin: 401
+Admin: Success",High,Security
+TC_SEC_OM_014,AuthZ,Admin status update access,Verify only admin can update status,"Admin and user exist
+Order exists","1. Attempt PUT /api/orders/:id/status as non-admin
+2. Verify rejection
+3. Attempt as admin
+4. Verify success","Order ID
+New status","Non-admin: 401
+Admin: Success",High,Security
+TC_SEC_OM_015,AuthZ,User own orders access,Verify user can access own orders,"User logged in
+User has orders","1. Login as user
+2. Access /api/orders/mine
+3. Verify only user's orders returned",User credentials,Only user's orders returned,High,Security
+TC_SEC_OM_016,AuthZ,User order details access,Verify user can view own order details,"User logged in
+Order exists","1. Login as user
+2. Access /api/orders/:id for own order
+3. Verify access granted",User's order ID,Order details returned,High,Security
+TC_SEC_OM_017,AuthZ,Cross-user order access prevention,Verify user cannot access other user's orders,"Two users exist
+Orders exist","1. Login as User A
+2. Attempt to access User B's order
+3. Verify rejection or no data","User A token
+User B order ID",Access denied or order not found,High,Security
+TC_SEC_OM_018,Injection,SQL injection in order ID,Verify SQL injection prevented,Admin logged in,"1. Send request with SQL injection in ID
+2. Verify injection blocked","ID: ""1' OR '1'='1""","Injection blocked
+No data breach",High,Security
+TC_SEC_OM_019,Injection,NoSQL injection in query,Verify NoSQL injection prevented,Admin logged in,"1. Send request with NoSQL injection
+2. Verify injection blocked","Query: {""$ne"": null}","Injection blocked
+No unauthorized access",High,Security
+TC_SEC_OM_020,Injection,XSS in shipping address,Verify XSS scripts sanitized,User creating order,"1. Create order with script in address
+2. Retrieve order
+3. Verify script sanitized","Address: ""<script>alert('XSS')</script>""",Script sanitized or escaped,High,Security
+TC_SEC_OM_021,Injection,XSS in order items,Verify XSS in item names sanitized,User creating order,"1. Create order with script in item name
+2. Retrieve order
+3. Verify script sanitized","Name: ""<script>...</script>""",Script sanitized,Medium,Security
+TC_SEC_OM_022,Injection,Command injection attempt,Verify command injection blocked,Admin logged in,"1. Send request with command injection
+2. Verify blocked","Input: ""; rm -rf /""","Command not executed
+Request rejected",High,Security
+TC_SEC_OM_023,Data,Password not in response,Verify password not exposed,User logged in,"1. Retrieve user data
+2. Check response
+3. Verify password not included",User token,Password field not in response,High,Security
+TC_SEC_OM_024,Data,Payment data security,Verify payment data secured,Order with payment,"1. Retrieve order
+2. Check payment data
+3. Verify sensitive data protected",Order with payment,Sensitive payment data protected,High,Security
+TC_SEC_OM_025,Data,Email privacy,Verify emails not exposed unnecessarily,Multiple users,"1. List orders
+2. Check user data
+3. Verify emails not exposed to non-admin",Order list,Emails only visible to admin,Medium,Security
+TC_SEC_OM_026,Encryption,JWT token encryption,Verify token encrypted with secret,User logged in,"1. Generate token
+2. Inspect token
+3. Verify encrypted with JWT_SECRET",User data,"Token encrypted
+Cannot read without secret",High,Security
+TC_SEC_OM_027,Encryption,HTTPS enforcement,Verify HTTPS used for API,Production environment,"1. Attempt HTTP request
+2. Verify redirect to HTTPS
+3. Check certificate",API endpoint,"HTTPS enforced
+Valid certificate",High,Security
+TC_SEC_OM_028,Session,Token expiration enforcement,Verify 30-day expiration enforced,Token created,"1. Wait 30+ days
+2. Use token
+3. Verify rejection",30+ day old token,"Token expired
+401 error",Medium,Security
+TC_SEC_OM_029,Session,Concurrent sessions,Verify multiple sessions handled,User logged in multiple devices,"1. Login on device 1
+2. Login on device 2
+3. Verify both sessions work",User credentials,Both sessions valid,Low,Security
+TC_SEC_OM_030,API,CORS configuration,Verify CORS properly configured,Frontend running,"1. Send request from frontend
+2. Check CORS headers
+3. Verify allowed origin",Frontend URL,"CORS headers correct
+Request allowed",High,Security
+TC_SEC_OM_031,API,CORS origin validation,Verify only allowed origins accepted,CORS configured,"1. Send request from unauthorized origin
+2. Verify rejection",Unauthorized origin,"CORS error
+Request blocked",High,Security
+TC_SEC_OM_032,API,HTTP method validation,Verify only allowed methods accepted,API running,"1. Send request with invalid method
+2. Verify rejection",Method: TRACE,405 Method Not Allowed,Medium,Security
+TC_SEC_OM_033,API,Request payload size limit,Verify large payloads rejected,API running,"1. Send very large request
+2. Verify rejection",100MB payload,413 Payload Too Large,Medium,Security
+TC_SEC_OM_034,API,Rate limiting,Verify rate limiting enforced,API running,"1. Send many requests rapidly
+2. Verify throttling",100 requests/second,429 Too Many Requests,Medium,Security
+TC_SEC_OM_035,Error,Generic authentication error,Verify generic error for auth failures,None,"1. Send invalid credentials
+2. Check error message
+3. Verify no specific info",Invalid credentials,Generic error message,Medium,Security
+TC_SEC_OM_036,Error,No stack trace exposure,Verify stack traces hidden,Production mode,"1. Trigger error
+2. Check response
+3. Verify no stack trace",Error condition,No stack trace in response,High,Security
+TC_SEC_OM_037,Error,Information disclosure prevention,Verify errors don't expose system info,API running,"1. Trigger various errors
+2. Check responses
+3. Verify no sensitive info",Various error conditions,No system info exposed,High,Security
+TC_SEC_OM_038,Logging,Admin action logging,Verify admin actions logged,Admin performing actions,"1. Perform admin action
+2. Check logs
+3. Verify action logged",Admin status update,Action logged with timestamp and user,Medium,Security
+TC_SEC_OM_039,Logging,Failed authentication logging,Verify failed logins logged,None,"1. Attempt failed login
+2. Check logs
+3. Verify attempt logged",Invalid credentials,Failed attempt logged,Medium,Security
+TC_SEC_OM_040,Logging,Sensitive data not logged,Verify passwords not in logs,User actions,"1. Perform actions
+2. Check logs
+3. Verify no passwords",User login,Passwords not in logs,High,Security
+TC_SEC_OM_041,Logging,Order modification audit,Verify order changes logged,Admin updates order,"1. Update order status
+2. Check audit log
+3. Verify change logged",Order status change,Change logged with user and timestamp,Medium,Security
+TC_SEC_OM_042,Database,Connection string security,Verify MongoDB URI secured,Server running,"1. Check environment variables
+2. Verify URI not exposed
+3. Check code",MongoDB URI,URI in env variable only,High,Security
+TC_SEC_OM_043,Database,Connection encryption,Verify DB connection encrypted,Database connected,"1. Check connection settings
+2. Verify SSL/TLS used
+3. Monitor connection",MongoDB connection,Connection encrypted,High,Security
+TC_SEC_OM_044,Database,Parameterized queries,Verify queries use parameters,Database operations,"1. Review query code
+2. Verify parameterization
+3. Test injection",Database queries,"Queries parameterized
+Injection prevented",High,Security
+TC_SEC_OM_045,Database,Minimal permissions,Verify DB user has minimal permissions,Database user configured,"1. Check DB user permissions
+2. Verify least privilege
+3. Test unauthorized operations",Database user,Only required permissions granted,Medium,Security
+TC_SEC_OM_046,Integration,PayPal client ID security,Verify PayPal ID secured,PayPal configured,"1. Check environment variables
+2. Verify ID not exposed
+3. Check code",PayPal client ID,ID in env variable only,High,Security
+TC_SEC_OM_047,Integration,Payment verification,Verify payment results validated,Payment received,"1. Receive payment callback
+2. Verify validation
+3. Check order update",Payment result,Payment verified before order update,High,Security
+TC_SEC_OM_048,Integration,File upload security,Verify upload security measures,Upload endpoint,"1. Attempt malicious file upload
+2. Verify rejection
+3. Check file validation",Malicious file,Upload rejected,High,Security
+TC_SEC_OM_049,Integration,File type validation,Verify only images accepted,Upload endpoint,"1. Attempt non-image upload
+2. Verify rejection",.exe file,File type rejected,High,Security
+TC_SEC_OM_050,Environment,JWT_SECRET strength,Verify JWT_SECRET is strong,Server configured,"1. Check JWT_SECRET
+2. Verify length and complexity
+3. Check randomness",JWT_SECRET value,"Strong secret (32+ chars, random)",High,Security
+TC_SEC_OM_051,Environment,Environment variable usage,Verify secrets in env variables,Server running,"1. Check code
+2. Verify no hardcoded secrets
+3. Check .env file",Source code,All secrets in env variables,High,Security
+TC_SEC_OM_052,Environment,.env file security,Verify .env not in version control,Repository,"1. Check .gitignore
+2. Verify .env excluded
+3. Check repository",Git repository,.env in .gitignore,High,Security
+TC_SEC_OM_053,Vulnerability,Dependency vulnerabilities,Verify no known vulnerabilities,Dependencies installed,"1. Run npm audit
+2. Check results
+3. Verify no high/critical issues",package.json,No high/critical vulnerabilities,High,Security
+TC_SEC_OM_054,Vulnerability,Package updates,Verify packages up to date,Dependencies installed,"1. Check package versions
+2. Compare with latest
+3. Verify security patches",package.json,Packages updated with security patches,Medium,Security
+TC_SEC_OM_055,OWASP,Injection prevention,Verify injection attacks prevented,API running,"1. Attempt various injection attacks
+2. Verify all blocked
+3. Check data integrity",Injection payloads,All injections blocked,High,Security
+TC_SEC_OM_056,OWASP,Authentication implementation,Verify proper authentication,API running,"1. Test authentication flow
+2. Verify token security
+3. Check session management",Auth flow,Authentication properly implemented,High,Security
+TC_SEC_OM_057,OWASP,Sensitive data protection,Verify sensitive data protected,API running,"1. Check data transmission
+2. Verify encryption
+3. Check storage",Sensitive data,Data encrypted in transit and at rest,High,Security
+TC_SEC_OM_058,OWASP,Access control enforcement,Verify access control enforced,API running,"1. Test various access scenarios
+2. Verify authorization
+3. Check role enforcement",Various user roles,Access control properly enforced,High,Security
+TC_SEC_OM_059,OWASP,Security configuration,Verify secure configuration,Server running,"1. Check server configuration
+2. Verify security headers
+3. Check defaults",Server config,Secure configuration applied,Medium,Security
+TC_SEC_OM_060,Password,Password in token issue,Verify password should not be in token,Token generation,"1. Generate token
+2. Decode token
+3. Check for password field",User with password,Password included in token (SECURITY ISSUE),Critical,Security

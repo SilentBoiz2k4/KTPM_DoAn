@@ -3,6 +3,7 @@ export default {
   transform: {},
   moduleFileExtensions: ['js', 'mjs'],
   testMatch: ['**/tests/**/*.test.js'],
+  testPathIgnorePatterns: ['/node_modules/'],
   collectCoverageFrom: [
     'models/**/*.js',
     'routes/**/*.js',
@@ -11,8 +12,11 @@ export default {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  verbose: true,
+  verbose: false,
   testTimeout: 30000,
   setupFilesAfterEnv: [],
   moduleNameMapper: {},
+  maxWorkers: 1,
+  forceExit: true,
+  detectOpenHandles: false,
 };

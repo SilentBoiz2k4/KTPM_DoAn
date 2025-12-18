@@ -1,0 +1,176 @@
+﻿Test Case ID,Module,Test Case Name,Description,Preconditions,Test Steps,Test Data,Expected Result,Priority,Test Type
+TC_GUI_OM_001,Navigation,Admin menu display,Verify admin menu appears in navbar,Admin logged in,"1. Login as admin
+2. Check navbar
+3. Verify ""Admin"" dropdown visible",Admin credentials,Admin dropdown menu visible in navbar,High,GUI
+TC_GUI_OM_002,Navigation,Navigate to Orders page,Verify navigation to orders page,Admin logged in,"1. Click Admin dropdown
+2. Click ""Orders""
+3. Verify URL and page content",Admin session,"Navigate to /admin/orders
+Page title ""Orders"" displayed",High,GUI
+TC_GUI_OM_003,Navigation,Navigate to Dashboard,Verify navigation to dashboard,Admin logged in,"1. Click Admin dropdown
+2. Click ""Dashboard""
+3. Verify URL and page content",Admin session,"Navigate to /admin/dashboard
+Dashboard displayed",High,GUI
+TC_GUI_OM_004,Order List,Order table structure,Verify table displays correctly,"Admin on orders page
+Orders exist","1. View orders page
+2. Check table headers
+3. Verify column structure",Orders in database,"Table with columns: ID, USER, DATE, TOTAL, PAID, STATUS, ACTIONS",High,GUI
+TC_GUI_OM_005,Order List,Order data display,Verify order data renders correctly,"Admin on orders page
+Orders exist","1. View orders page
+2. Check each table row
+3. Verify data accuracy",Multiple orders,All order data displayed correctly in table rows,High,GUI
+TC_GUI_OM_006,Order List,User name display,Verify user names populate,"Admin on orders page
+Orders with users","1. View orders page
+2. Check USER column
+3. Verify names or ""DELETED USER""",Orders with/without users,"User names displayed or ""DELETED USER"" for deleted users",High,GUI
+TC_GUI_OM_007,Order List,Date formatting,Verify date format,"Admin on orders page
+Orders exist","1. View orders page
+2. Check DATE column
+3. Verify format YYYY-MM-DD",Orders with dates,"Dates displayed as YYYY-MM-DD (e.g., 2024-12-18)",Medium,GUI
+TC_GUI_OM_008,Order List,Price formatting,Verify price format,"Admin on orders page
+Orders exist","1. View orders page
+2. Check TOTAL column
+3. Verify 2 decimal places",Orders with prices,"Prices displayed with 2 decimals (e.g., 99.99)",Medium,GUI
+TC_GUI_OM_009,Order List,Payment status display,Verify paid status,"Admin on orders page
+Orders exist","1. View orders page
+2. Check PAID column
+3. Verify ""Yes"" or ""No""",Paid and unpaid orders,"""Yes"" for paid orders, ""No"" for unpaid",Medium,GUI
+TC_GUI_OM_010,Order List,Status dropdown display,Verify status dropdown,"Admin on orders page
+Orders exist","1. View orders page
+2. Check STATUS column
+3. Verify dropdown with current status",Orders with statuses,Dropdown showing current status selected,High,GUI
+TC_GUI_OM_011,Order List,Status dropdown options,Verify all status options,"Admin on orders page
+Order exists","1. Click status dropdown
+2. View all options
+3. Verify complete list",Order with status,"Options: Pending, Processing, Shipping, Delivered, Cancelled",High,GUI
+TC_GUI_OM_012,Order List,Status change interaction,Verify status change,"Admin on orders page
+Order exists","1. Click status dropdown
+2. Select new status
+3. Verify update triggered",Order to update,"Status update request sent
+Success toast appears",High,GUI
+TC_GUI_OM_013,Order List,Details button display,Verify Details button,"Admin on orders page
+Orders exist","1. View orders page
+2. Check ACTIONS column
+3. Verify button for each order",Multiple orders,"""Details"" button visible for each order",High,GUI
+TC_GUI_OM_014,Order List,Details button navigation,Verify Details navigation,"Admin on orders page
+Order exists","1. Click Details button
+2. Verify navigation
+3. Check URL and content",Order ID,"Navigate to /order/{orderId}
+Order details displayed",High,GUI
+TC_GUI_OM_015,Order List,Loading state,Verify loading spinner,Admin navigates to orders,"1. Navigate to orders page
+2. Observe loading state
+3. Verify spinner displays",Slow network,Loading spinner visible while fetching,Medium,GUI
+TC_GUI_OM_016,Order List,Error state display,Verify error message,"Admin on orders page
+API error","1. Trigger API error
+2. Observe error state
+3. Verify error message",API failure,Red alert box with error message,Medium,GUI
+TC_GUI_OM_017,Order List,Success toast notification,Verify success toast,Admin updates status,"1. Change order status
+2. Wait for response
+3. Verify toast appears",Status update,"Green toast ""Order status updated"" at bottom center",High,GUI
+TC_GUI_OM_018,Order List,Error toast notification,Verify error toast,"Admin updates status
+Update fails","1. Trigger update error
+2. Observe notification
+3. Verify error toast",Failed update,Red toast with error message,Medium,GUI
+TC_GUI_OM_019,Order Details,Page header display,Verify order ID in header,Admin on order details,"1. Navigate to order details
+2. Check page header
+3. Verify order ID",Order ID,"Header shows ""Order {orderId}""",High,GUI
+TC_GUI_OM_020,Order Details,Shipping card layout,Verify shipping information,Admin on order details,"1. View order details
+2. Check shipping card
+3. Verify all fields",Order with shipping,"Card shows: Name, Address, City, Postal Code, Country, Status",High,GUI
+TC_GUI_OM_021,Order Details,Delivery status badge,Verify delivery status,Admin on order details,"1. View order details
+2. Check delivery status
+3. Verify color and message",Delivered/undelivered order,"Green ""Delivered at {date}"" or Red ""Not Delivered""",High,GUI
+TC_GUI_OM_022,Order Details,Payment card layout,Verify payment information,Admin on order details,"1. View order details
+2. Check payment card
+3. Verify method and status",Order with payment,Card shows payment method and status,High,GUI
+TC_GUI_OM_023,Order Details,Payment status badge,Verify payment status,Admin on order details,"1. View order details
+2. Check payment status
+3. Verify color and message",Paid/unpaid order,"Green ""Paid at {date}"" or Red ""Not Paid""",High,GUI
+TC_GUI_OM_024,Order Details,Items list display,Verify order items,Admin on order details,"1. View order details
+2. Check items card
+3. Verify all items listed",Order with multiple items,All items displayed in list with details,High,GUI
+TC_GUI_OM_025,Order Details,Item image display,Verify product images,Admin on order details,"1. View order details
+2. Check item images
+3. Verify images load",Order with items,Product images displayed as thumbnails,Medium,GUI
+TC_GUI_OM_026,Order Details,Item name link,Verify product links,Admin on order details,"1. View order details
+2. Click product name
+3. Verify navigation",Order with items,Navigate to product page /product/{slug},Medium,GUI
+TC_GUI_OM_027,Order Details,Order summary card,Verify summary display,Admin on order details,"1. View order details
+2. Check summary card
+3. Verify all price fields",Order with prices,"Items, Shipping, Tax, Total prices displayed",High,GUI
+TC_GUI_OM_028,Order Details,Price formatting in summary,Verify price decimals,Admin on order details,"1. View order details
+2. Check all prices
+3. Verify 2 decimal format",Order with prices,All prices show 2 decimals with $ symbol,Medium,GUI
+TC_GUI_OM_029,Order Details,PayPal buttons display,Verify PayPal integration,"Admin on order details
+Unpaid PayPal order","1. View unpaid PayPal order
+2. Check summary card
+3. Verify PayPal buttons",Unpaid PayPal order,PayPal buttons visible in summary card,Medium,GUI
+TC_GUI_OM_030,Order Details,COD message display,Verify COD information,"Admin on order details
+COD order","1. View COD order
+2. Check summary card
+3. Verify COD message",COD order,"Blue info message ""Cash on Delivery - Pay when received""",Medium,GUI
+TC_GUI_OM_031,Order Details,Loading state,Verify loading spinner,Admin navigates to order,"1. Navigate to order details
+2. Observe loading state
+3. Verify spinner",Slow network,Loading spinner visible while fetching,Medium,GUI
+TC_GUI_OM_032,Order Details,Error state,Verify error display,Admin views invalid order,"1. Navigate to invalid order ID
+2. Observe error state
+3. Verify error message",Invalid order ID,Red alert with error message,Medium,GUI
+TC_GUI_OM_033,Dashboard,Page header,Verify dashboard title,Admin on dashboard,"1. Navigate to dashboard
+2. Check page header
+3. Verify title",Admin session,"""Dashboard"" title displayed",High,GUI
+TC_GUI_OM_034,Dashboard,Statistics cards layout,Verify cards display,"Admin on dashboard
+Data exists","1. View dashboard
+2. Check statistics cards
+3. Verify layout",Dashboard data,"Three cards in row: Users, Orders, Sales",High,GUI
+TC_GUI_OM_035,Dashboard,Users count display,Verify users statistics,Admin on dashboard,"1. View dashboard
+2. Check users card
+3. Verify count",Users in database,Users count displayed correctly,High,GUI
+TC_GUI_OM_036,Dashboard,Orders count display,Verify orders statistics,Admin on dashboard,"1. View dashboard
+2. Check orders card
+3. Verify count",Orders in database,Orders count displayed correctly,High,GUI
+TC_GUI_OM_037,Dashboard,Sales amount display,Verify sales statistics,Admin on dashboard,"1. View dashboard
+2. Check sales card
+3. Verify amount with $",Orders with prices,Total sales with $ and 2 decimals,High,GUI
+TC_GUI_OM_038,Dashboard,Sales chart display,Verify sales chart,"Admin on dashboard
+Sales data exists","1. View dashboard
+2. Scroll to sales chart
+3. Verify chart renders",Daily sales data,Area chart displays with dates and sales,High,GUI
+TC_GUI_OM_039,Dashboard,Sales chart dimensions,Verify chart size,Admin on dashboard,"1. View sales chart
+2. Check dimensions
+3. Verify responsive",Sales data,"Chart width 100%, height 400px",Low,GUI
+TC_GUI_OM_040,Dashboard,Sales chart empty state,Verify no data message,"Admin on dashboard
+No sales","1. View dashboard with no sales
+2. Check sales section
+3. Verify message",Empty sales data,"""No Sale"" message displayed",Medium,GUI
+TC_GUI_OM_041,Dashboard,Categories chart display,Verify categories chart,"Admin on dashboard
+Products exist","1. View dashboard
+2. Scroll to categories chart
+3. Verify pie chart",Product categories,Pie chart displays category distribution,High,GUI
+TC_GUI_OM_042,Dashboard,Categories chart dimensions,Verify chart size,Admin on dashboard,"1. View categories chart
+2. Check dimensions
+3. Verify responsive",Category data,"Chart width 100%, height 400px",Low,GUI
+TC_GUI_OM_043,Dashboard,Categories empty state,Verify no data message,"Admin on dashboard
+No categories","1. View dashboard with no products
+2. Check categories section
+3. Verify message",Empty category data,"""No Category"" message displayed",Medium,GUI
+TC_GUI_OM_044,Dashboard,Loading state,Verify loading spinner,Admin navigates to dashboard,"1. Navigate to dashboard
+2. Observe loading state
+3. Verify spinner",Slow network,Loading spinner visible while fetching,Medium,GUI
+TC_GUI_OM_045,Dashboard,Error state,Verify error display,"Admin on dashboard
+API error","1. Trigger API error
+2. Observe error state
+3. Verify error message",API failure,Red alert with error message,Medium,GUI
+TC_GUI_OM_046,Responsive,Mobile table scroll,Verify table responsiveness,Admin on mobile device,"1. Open orders page on mobile
+2. View table
+3. Verify horizontal scroll",Mobile viewport,Table scrolls horizontally,Medium,GUI
+TC_GUI_OM_047,Responsive,Mobile cards stack,Verify dashboard on mobile,Admin on mobile device,"1. Open dashboard on mobile
+2. View statistics cards
+3. Verify stacking",Mobile viewport,Cards stack vertically,Medium,GUI
+TC_GUI_OM_048,Responsive,Tablet layout,Verify tablet view,Admin on tablet device,"1. Open pages on tablet
+2. Check layout
+3. Verify appropriate sizing",Tablet viewport,Layout adjusts for tablet screen,Low,GUI
+TC_GUI_OM_049,Accessibility,Keyboard navigation,Verify Tab key navigation,Admin on orders page,"1. Use Tab key
+2. Navigate through elements
+3. Verify all accessible",Keyboard only,"All buttons, dropdowns, links accessible via Tab",Medium,GUI
+TC_GUI_OM_050,Accessibility,Focus indicators,Verify focus visibility,Admin on orders page,"1. Tab through elements
+2. Observe focus states
+3. Verify visibility",Keyboard navigation,Clear focus indicators on all interactive elements,Medium,GUI

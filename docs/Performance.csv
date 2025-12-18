@@ -1,0 +1,86 @@
+﻿Test Case ID,Module,Test Case Name,Description,Preconditions,Test Steps,Test Data,Expected Result,Priority,Test Type
+TC_PERF_001,Order,Admin view all orders response time,Verify admin can view all orders within acceptable time,Admin logged in,"1. Navigate to orders page
+2. Measure page load time
+3. Measure API response time",Database with 1000+ orders,"Page loads within 2 seconds
+API responds within 500ms",High,Performance
+TC_PERF_002,Order,Admin view order details response time,Verify order details load quickly,"Admin logged in
+Order exists","1. Navigate to order details
+2. Measure page load time
+3. Measure API response time",Valid order ID,"Page loads within 2 seconds
+API responds within 300ms",High,Performance
+TC_PERF_003,Order,Admin update order status response time,Verify order status update is fast,"Admin logged in
+Order exists","1. Navigate to order
+2. Change status
+3. Measure update time
+4. Measure API response time",Valid order with status change,"Status updates within 2 seconds
+API responds within 500ms",High,Performance
+TC_PERF_004,Order,Admin view dashboard summary response time,Verify dashboard loads efficiently,Admin logged in,"1. Navigate to dashboard
+2. Measure page load time
+3. Measure aggregation query time",Database with orders and users,"Dashboard loads within 3 seconds
+API responds within 800ms",Medium,Performance
+TC_PERF_005,Order,GET /api/orders API response time,Verify API endpoint performance,Valid admin token,"1. Send GET request to /api/orders
+2. Measure response time
+3. Verify data returned",Admin auth token,API responds within 500ms,High,Performance
+TC_PERF_006,Order,| GET /api/orders/:id API response time ,Verify single order API performance,"Valid admin token
+Order exists ","1. Send GET request to /api/orders/:id
+2. Measure response time ",Valid order ID ,API responds within 300ms ,hight,Performance
+TC_PERF_007,Order,PUT /api/orders/:id/status API response time ,Verify status update API performance ,"admin token
+Order exists ","1. Send PUT request with new status
+2. Measure response time
+3. Verify status updated ",Valid order ID and status ,API responds within 500ms ,High,Performance
+TC_PERF_008,Order,GET /api/orders/summary API response time,Verify summary aggregation performance ,Valid admin token ,"1. Send GET request to /api/orders/summary
+2. Measure response time
+3. Check aggregation efficiency ",Database with orders ,| API responds within 800ms ,Medium,Performance
+TC_PERF_009,Order,Concurrent admin order views ,Verify system handles concurrent order views ,Multiple admin users ready ,"1. Simulate 20 concurrent order list requests
+2. Measure response times
+3. Check for errors ",20 concurrent users ,"All requests complete successfully
+Average response < 1 second ",Medium,Performance
+TC_PERF_010,Order,Concurrent order status updates ,Verify system handles concurrent updates ,Multiple orders ready ,"1. Simulate 10 concurrent status updates
+2. Measure response times
+3. Verify all updates successful ",10 different orders ,"All updates complete successfully
+No data conflicts ",High,Performance
+TC_PERF_011,Order,Concurrent dashboard requests ,Verify system handles concurrent dashboard loads,| Multiple admin sessions ,"1. Simulate 30 concurrent dashboard requests
+2. Measure response times
+3. Monitor server resources ",30 concurrent users,"All requests complete within 5 seconds
+Server stable ",Medium,Performance
+TC_PERF_012,Database,Order query performance ,Verify order queries are optimized,Database with indexes ,"1. Query orders with 10000+ orders in DB
+2. Measure query time
+3. Check index usage ",Database with 10000 orders ,Query completes within 500ms ,Medium,Performance
+TC_PERF_013,Database,Aggregation query performance ,Verify summary aggregation is efficient ,Database with data ,"1. Run summary aggregation
+2. Measure execution time
+3. Check query plan ",Database with orders and users ,Aggregation completes within 800ms ,Medium,Performance
+TC_PERF_014,Database,Connection pool performance ,Verify database connection efficiency,Server running ,"1. Monitor connection pool under load
+2. Check connection reuse
+3. Verify no connection leaks ",Multiple concurrent requests ,"Connections managed efficiently
+No leaks detected ",Medium,Performance
+TC_PERF_015,Memory,Server memory under load ,Verify server memory stability ,Server running ,"1. Run load test for 10 minutes
+2. Monitor server memory
+3. Check for memory leaks ",Continuous load ,"Memory usage stable
+No significant leaks ",Medium,Performance
+TC_PERF_016,Memory,Client memory - order list ,Verify no client memory leaks ,Admin in order list page ,"1. Navigate order list repeatedly
+2. Monitor browser memory
+3. Check for leaks ",Multiple page navigations ,No memory leaks detected ,Low,Performance
+TC_PERF_017,Order,Order filtering performance ,| Verify order filtering is fast ,"Admin logged in
+Orders exist ","1. Apply various filters
+2. Measure filter response time
+3. Check UI responsiveness ",Various filter criteria ,Filtering completes within 1.5 seconds ,Medium,Performance
+TC_PERF_018,Order,Order sorting performance ,Verify order sorting is efficient ,"Admin logged in
+Orders exist ","1. Sort by different columns
+2. Measure sort response time
+3. Check UI responsiveness",Large order list ,Sorting completes within 1 second ,Medium,Performance
+TC_PERF_019,Order,Order pagination performance ,Verify pagination loads quickly,"Admin logged in
+Many orders exist","1. Navigate through pages
+2. Measure page load time
+3. Check data loading ",Database with 1000+ orders ,Each page loads within 1 second ,Medium,Performance
+TC_PERF_020,System,System degradation under high load ,Verify system degrades gracefully ,System running ,"1. Gradually increase load
+2. Monitor response times
+3. Check error rates",Increasing concurrent users ,"System degrades gracefully
+No crashes ",Low,Performance
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,

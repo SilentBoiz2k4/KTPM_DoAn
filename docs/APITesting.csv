@@ -1,0 +1,84 @@
+﻿Test Case ID,API Endpoint,Method,Test Case Name,Description,Preconditions,Request Headers,Request Body,Expected Status,Expected Response,Priority
+TC_API_OM_001,/api/orders,GET,Get all orders as admin,Verify admin can retrieve all orders,"Admin logged in
+Orders exist",Authorization: Bearer {admin_token},N/A,200,Array of orders with user names,High
+TC_API_OM_002,/api/orders,GET,Get all orders without token,Verify authentication required,Orders exist,None,N/A,401,"{""message"": ""No Token""}",High
+TC_API_OM_003,/api/orders,GET,Get all orders with invalid token,Verify token validation,Orders exist,Authorization: Bearer invalid_token,N/A,401,"{""message"": ""Invalid Token""}",High
+TC_API_OM_004,/api/orders,GET,Get all orders as non-admin,Verify admin authorization required,"Non-admin logged in
+Orders exist",Authorization: Bearer {user_token},N/A,401,"{""message"": ""Invalid Admin Token""}",High
+TC_API_OM_005,/api/orders,GET,Get all orders when empty,Verify empty array returned,"Admin logged in
+No orders",Authorization: Bearer {admin_token},N/A,200,[],Medium
+TC_API_OM_006,/api/orders/:id,GET,Get order by valid ID,Verify order details retrieved,"Admin logged in
+Order exists",Authorization: Bearer {admin_token},N/A,200,Order object with user populated,High
+TC_API_OM_007,/api/orders/:id,GET,Get order by invalid ID,Verify 404 for invalid ID,Admin logged in,Authorization: Bearer {admin_token},N/A,404,"{""message"": ""Order Not Found""}",High
+TC_API_OM_008,/api/orders/:id,GET,Get order without authentication,Verify authentication required,Order exists,None,N/A,401,"{""message"": ""No Token""}",High
+TC_API_OM_009,/api/orders/:id,GET,Get order as owner,Verify user can view own order,"User logged in
+User's order",Authorization: Bearer {user_token},N/A,200,Order object,High
+TC_API_OM_010,/api/orders/mine,GET,Get user's orders,Verify user orders retrieved,"User logged in
+User has orders",Authorization: Bearer {user_token},N/A,200,Array of user's orders,High
+TC_API_OM_011,/api/orders/mine,GET,Get user's orders when empty,Verify empty array for no orders,"User logged in
+No orders",Authorization: Bearer {user_token},N/A,200,[],Medium
+TC_API_OM_012,/api/orders/mine,GET,Get user's orders without token,Verify authentication required,None,None,N/A,401,"{""message"": ""No Token""}",High
+TC_API_OM_013,/api/orders/summary,GET,Get dashboard summary,Verify summary statistics,"Admin logged in
+Data exists",Authorization: Bearer {admin_token},N/A,200,"{users, orders, dailyOrders, productCategories}",High
+TC_API_OM_014,/api/orders/summary,GET,Get summary as non-admin,Verify admin authorization,Non-admin logged in,Authorization: Bearer {user_token},N/A,401,"{""message"": ""Invalid Admin Token""}",High
+TC_API_OM_015,/api/orders/summary,GET,Get summary with no data,Verify empty aggregations,"Admin logged in
+No data",Authorization: Bearer {admin_token},N/A,200,Empty aggregation results,Medium
+TC_API_OM_016,/api/orders,POST,Create order with valid data,Verify order creation,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",Valid order object,201,"{""message"": ""New Order Created"", ""order"": {...}}",High
+TC_API_OM_017,/api/orders,POST,Create order without token,Verify authentication required,None,Content-Type: application/json,Valid order object,401,"{""message"": ""No Token""}",High
+TC_API_OM_018,/api/orders,POST,Create order with empty items,Verify validation,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",orderItems: [],400/500,Validation error,High
+TC_API_OM_019,/api/orders,POST,Create order with invalid product,Verify product validation,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",Invalid product ID,400/500,Validation error,Medium
+TC_API_OM_020,/api/orders,POST,Create order with negative price,Verify price validation,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",price: -10,400/500,Validation error,High
+TC_API_OM_021,/api/orders,POST,Create order with zero quantity,Verify quantity validation,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",quantity: 0,400/500,Validation error,High
+TC_API_OM_022,/api/orders,POST,Create order without shipping address,Verify address required,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",shippingAddress: null,400/500,Validation error,High
+TC_API_OM_023,/api/orders,POST,Create order without payment method,Verify payment method required,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json","paymentMethod: """"",400/500,Validation error,High
+TC_API_OM_024,/api/orders,POST,Create order with missing prices,Verify price fields required,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",Missing itemsPrice,400/500,Validation error,High
+TC_API_OM_025,/api/orders/:id/pay,PUT,Pay order with valid data,Verify payment processing,"User logged in
+Order exists","Authorization: Bearer {user_token}
+Content-Type: application/json",Valid payment result,200,"{""message"": ""Order Paid"", ""order"": {...}}",High
+TC_API_OM_026,/api/orders/:id/pay,PUT,Pay order without token,Verify authentication required,Order exists,Content-Type: application/json,Valid payment result,401,"{""message"": ""No Token""}",High
+TC_API_OM_027,/api/orders/:id/pay,PUT,Pay non-existent order,Verify order existence check,User logged in,"Authorization: Bearer {user_token}
+Content-Type: application/json",Valid payment result,404,"{""message"": ""Order Not Found""}",High
+TC_API_OM_028,/api/orders/:id/pay,PUT,Pay order with invalid payment result,Verify payment data validation,"User logged in
+Order exists","Authorization: Bearer {user_token}
+Content-Type: application/json",Invalid payment result,400/500,Validation error,Medium
+TC_API_OM_029,/api/orders/:id/pay,PUT,Pay order and verify cart deletion,Verify cart cleanup,"User logged in
+Order exists
+Cart exists","Authorization: Bearer {user_token}
+Content-Type: application/json",Valid payment result,200,"Order paid, cart deleted",High
+TC_API_OM_030,/api/orders/:id/pay,PUT,Pay order and verify timestamps,Verify paidAt set,"User logged in
+Order exists","Authorization: Bearer {user_token}
+Content-Type: application/json",Valid payment result,200,"isPaid: true, paidAt set",High
+TC_API_OM_031,/api/orders/:id/status,PUT,Update status to Processing,Verify status update,"Admin logged in
+Order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Processing""}",200,"{""message"": ""Order Status Updated"", ""order"": {...}}",High
+TC_API_OM_032,/api/orders/:id/status,PUT,Update status to Shipping,Verify status update,"Admin logged in
+Order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Shipping""}",200,Status updated,High
+TC_API_OM_033,/api/orders/:id/status,PUT,Update status to Delivered,Verify delivery handling,"Admin logged in
+Order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Delivered""}",200,"isDelivered: true, deliveredAt set",High
+TC_API_OM_034,/api/orders/:id/status,PUT,Update status to Cancelled,Verify cancellation,"Admin logged in
+Order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Cancelled""}",200,Status updated to Cancelled,Medium
+TC_API_OM_035,/api/orders/:id/status,PUT,Update COD order to Delivered,Verify COD payment handling,"Admin logged in
+COD order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Delivered""}",200,"isPaid: true, cart deleted",High
+TC_API_OM_036,/api/orders/:id/status,PUT,Update status as non-admin,Verify admin authorization,"Non-admin logged in
+Order exists","Authorization: Bearer {user_token}
+Content-Type: application/json","{""status"": ""Processing""}",401,"{""message"": ""Invalid Admin Token""}",High
+TC_API_OM_037,/api/orders/:id/status,PUT,Update status without token,Verify authentication required,Order exists,Content-Type: application/json,"{""status"": ""Processing""}",401,"{""message"": ""No Token""}",High
+TC_API_OM_038,/api/orders/:id/status,PUT,Update status with invalid value,Verify status validation,"Admin logged in
+Order exists","Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""InvalidStatus""}",400/500,Validation error,High
+TC_API_OM_039,/api/orders/:id/status,PUT,Update non-existent order status,Verify order existence,Admin logged in,"Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Processing""}",404,"{""message"": ""Order Not Found""}",High
+TC_API_OM_040,/api/orders/:id/status,PUT,Update status with invalid ID,Verify ID validation,Admin logged in,"Authorization: Bearer {admin_token}
+Content-Type: application/json","{""status"": ""Processing""}",404/500,Error message,Medium
