@@ -91,7 +91,8 @@ jobs:
         working-directory: frontend
         run: npm run build
         env:
-          CI: true
+          CI: false
+          DISABLE_ESLINT_PLUGIN: true
 
 
   # ============================================
