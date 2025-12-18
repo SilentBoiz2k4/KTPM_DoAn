@@ -61,6 +61,7 @@ jobs:
         working-directory: frontend
         run: npm run build
         env:
+          CI: false
           REACT_APP_API_URL: https://ktpm-doan.onrender.com
 
   deploy:
