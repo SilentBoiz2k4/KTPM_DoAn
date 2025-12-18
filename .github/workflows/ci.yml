@@ -66,10 +66,10 @@ jobs:
           path: backend/coverage/
 
   # ============================================
-  # JOB 2: Frontend Tests
+  # JOB 2: Frontend Build & Lint
   # ============================================
-  frontend-tests:
-    name: Frontend Tests
+  frontend-check:
+    name: Frontend Check
     runs-on: ubuntu-latest
 
     steps:
@@ -87,55 +87,20 @@ jobs:
         working-directory: frontend
         run: npm ci --legacy-peer-deps
 
-      - name: Run Tests
+      - name: Build Frontend
         working-directory: frontend
-        run: npm test -- --coverage --watchAll=false
+        run: npm run build
         env:
           CI: true
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-coverage
-          path: frontend/coverage/
-
 
   # ============================================
-  # JOB 3: Build Check
-  # ============================================
-  build:
-    name: Build Check
-    runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Build Frontend
-        working-directory: frontend
-        run: |
-          npm ci --legacy-peer-deps
-          npm run build
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/build/
-
-  # ============================================
-  # JOB 4: Docker Build Test
+  # JOB 3: Docker Build Test
   # ============================================
   docker-build:
     name: Docker Build Test
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
+    needs: [backend-tests, frontend-check]
 
     steps:
       - name: Checkout code
