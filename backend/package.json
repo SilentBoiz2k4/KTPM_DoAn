@@ -19,6 +19,7 @@
     "test:int:cart": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration/cart.integration.test.js",
     "test:int:checkout": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration/checkout.integration.test.js",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=e2e --verbose",
+    "test:security": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=security --verbose",
     "perf:browse": "npx artillery run tests/performance/checkout.performance.yml",
     "perf:order": "npx artillery run tests/performance/order-api.performance.yml",
     "perf:stress": "npx artillery run tests/performance/stress.performance.yml",
