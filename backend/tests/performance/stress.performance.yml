@@ -1,0 +1,63 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    # Stress test - gradually increase load to find breaking point
+    - duration: 30
+      arrivalRate: 10
+      name: "Baseline"
+    - duration: 30
+      arrivalRate: 30
+      name: "Moderate stress"
+    - duration: 30
+      arrivalRate: 60
+      name: "High stress"
+    - duration: 30
+      arrivalRate: 100
+      name: "Extreme stress"
+    - duration: 20
+      arrivalRate: 150
+      name: "Breaking point test"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  plugins:
+    expect: {}
+
+scenarios:
+  # ============================================
+  # SCENARIO 1: API Health Check
+  # ============================================
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/products"
+          expect:
+            - statusCode: 200
+
+  # ============================================
+  # SCENARIO 2: Product Listing (Read Heavy)
+  # ============================================
+  - name: "Product Listing"
+    weight: 50
+    flow:
+      - get:
+          url: "/api/products"
+      - think: 1
+      - get:
+          url: "/api/products/categories"
+
+  # ============================================
+  # SCENARIO 3: Search (CPU Intensive)
+  # ============================================
+  - name: "Search Operations"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/products/search?query=shirt"
+      - think: 0.5
+      - get:
+          url: "/api/products/search?query=pants"
+      - think: 0.5
+      - get:
+          url: "/api/products/search?query=dress"

@@ -1,0 +1,169 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    # Light load
+    - duration: 20
+      arrivalRate: 5
+      name: "Light load"
+    # Medium load
+    - duration: 40
+      arrivalRate: 15
+      name: "Medium load"
+    # Heavy load
+    - duration: 30
+      arrivalRate: 30
+      name: "Heavy load"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  variables:
+    testEmail: "perftest_{{ $randomNumber(1000, 9999) }}@test.com"
+  plugins:
+    expect: {}
+
+scenarios:
+  # ============================================
+  # SCENARIO 1: User Registration
+  # ============================================
+  - name: "User Registration"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/users/signup"
+          json:
+            name: "Perf Test User"
+            email: "perftest_{{ $randomNumber(10000, 99999) }}@test.com"
+            password: "Test@123456"
+          expect:
+            - statusCode:
+                - 201
+                - 400
+
+  # ============================================
+  # SCENARIO 2: User Login
+  # ============================================
+  - name: "User Login"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/users/signin"
+          json:
+            email: "test@example.com"
+            password: "123456"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+
+  # ============================================
+  # SCENARIO 3: Browse and Add to Cart Flow
+  # ============================================
+  - name: "Browse and Add to Cart"
+    weight: 40
+    flow:
+      # Login first
+      - post:
+          url: "/api/users/signin"
+          json:
+            email: "test@example.com"
+            password: "123456"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      # Get products
+      - get:
+          url: "/api/products"
+          capture:
+            - json: "$[0]._id"
+              as: "productId"
+          expect:
+            - statusCode: 200
+      # Add to cart
+      - post:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            productId: "{{ productId }}"
+            quantity: 1
+          expect:
+            - statusCode:
+                - 200
+                - 201
+                - 401
+
+  # ============================================
+  # SCENARIO 4: View Cart
+  # ============================================
+  - name: "View Cart"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/users/signin"
+          json:
+            email: "test@example.com"
+            password: "123456"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/cart"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode:
+                - 200
+                - 401
+
+  # ============================================
+  # SCENARIO 5: Complete Checkout Flow
+  # ============================================
+  - name: "Complete Checkout"
+    weight: 15
+    flow:
+      # Login
+      - post:
+          url: "/api/users/signin"
+          json:
+            email: "test@example.com"
+            password: "123456"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      # Get products
+      - get:
+          url: "/api/products"
+          capture:
+            - json: "$[0]._id"
+              as: "productId"
+            - json: "$[0].price"
+              as: "productPrice"
+      # Create order
+      - post:
+          url: "/api/orders"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            orderItems:
+              - product: "{{ productId }}"
+                quantity: 1
+                price: "{{ productPrice }}"
+            shippingAddress:
+              fullName: "Perf Test"
+              address: "123 Test St"
+              city: "Test City"
+              postalCode: "12345"
+              country: "Vietnam"
+            paymentMethod: "COD"
+            itemsPrice: "{{ productPrice }}"
+            shippingPrice: 0
+            taxPrice: 0
+            totalPrice: "{{ productPrice }}"
+          expect:
+            - statusCode:
+                - 201
+                - 400
+                - 401

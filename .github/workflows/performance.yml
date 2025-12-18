@@ -1,0 +1,52 @@
+name: Performance Tests
+
+on:
+  schedule:
+    # Run every Sunday at 2:00 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  performance-tests:
+    name: Run Performance Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Start Backend Server
+        working-directory: backend
+        run: |
+          npm start &
+          sleep 10
+        env:
+          MONGODB_URI: mongodb://localhost:27017/perf_test
+          JWT_SECRET: perf_test_secret
+          PORT: 5000
+
+      - name: Run Performance Tests
+        working-directory: backend
+        run: npm run perf:browse
+
+      - name: Upload Performance Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: backend/results.json
+        if: always()

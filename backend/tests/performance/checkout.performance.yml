@@ -1,0 +1,81 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    # Warm-up phase
+    - duration: 10
+      arrivalRate: 2
+      name: "Warm up"
+    # Ramp-up phase
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 20
+      name: "Ramp up load"
+    # Sustained load
+    - duration: 60
+      arrivalRate: 20
+      name: "Sustained load"
+    # Spike test
+    - duration: 10
+      arrivalRate: 50
+      name: "Spike test"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  plugins:
+    expect: {}
+
+scenarios:
+  # ============================================
+  # SCENARIO 1: Browse Products
+  # ============================================
+  - name: "Browse Products"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/products"
+          expect:
+            - statusCode: 200
+
+  # ============================================
+  # SCENARIO 2: View Product Detail
+  # ============================================
+  - name: "View Product Detail"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/products"
+          capture:
+            - json: "$[0].slug"
+              as: "productSlug"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/products/slug/{{ productSlug }}"
+          expect:
+            - statusCode:
+                - 200
+                - 404
+
+  # ============================================
+  # SCENARIO 3: Search Products
+  # ============================================
+  - name: "Search Products"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/products/search?query=shirt"
+          expect:
+            - statusCode:
+                - 200
+                - 404
+
+  # ============================================
+  # SCENARIO 4: Get Categories
+  # ============================================
+  - name: "Get Categories"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/products/categories"
+          expect:
+            - statusCode: 200
