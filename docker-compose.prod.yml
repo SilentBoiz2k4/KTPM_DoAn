@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build: ./backend
@@ -22,25 +24,13 @@ services:
     build:
       context: ./frontend
       args:
-        - REACT_APP_API_URL=http://localhost:5000
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:5000}
     container_name: ecommerce-frontend
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
-      - backend
-    networks:
-      - ecommerce-network
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:5.0
-    container_name: ecommerce-mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=ecommerce
+      backend:
+        condition: service_healthy
     networks:
       - ecommerce-network
     restart: unless-stopped
@@ -48,6 +38,3 @@ services:
 networks:
   ecommerce-network:
     driver: bridge
-
-volumes:
-  mongo_data:
