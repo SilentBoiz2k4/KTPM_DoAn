@@ -1,0 +1,51 @@
+name: Postman API Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - local
+          - production
+
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'postman/**'
+
+jobs:
+  api-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Newman
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Run Postman Tests
+        run: |
+          newman run postman/collections/ktpm-api.postman_collection.json \
+            -e postman/environments/${{ github.event.inputs.environment || 'production' }}.json \
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export reports/api-test-report.html
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: postman-test-report
+          path: reports/
+          retention-days: 30

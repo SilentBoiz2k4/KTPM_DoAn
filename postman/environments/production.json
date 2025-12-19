@@ -1,0 +1,16 @@
+{
+  "id": "prod-env",
+  "name": "Production",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://ktpm-doan.onrender.com",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "enabled": true
+    }
+  ]
+}
