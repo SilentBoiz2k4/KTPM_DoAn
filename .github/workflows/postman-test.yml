@@ -35,10 +35,19 @@ jobs:
           npm install -g newman
           npm install -g newman-reporter-htmlextra
 
+      - name: Set Environment
+        id: set-env
+        run: |
+          if [ -n "${{ github.event.inputs.environment }}" ]; then
+            echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "env=production" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run Postman Tests
         run: |
           newman run postman/collections/ktpm-api.postman_collection.json \
-            -e postman/environments/${{ github.event.inputs.environment || 'production' }}.json \
+            -e postman/environments/${{ steps.set-env.outputs.env }}.json \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export reports/api-test-report.html
 
