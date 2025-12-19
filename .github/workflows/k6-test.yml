@@ -1,0 +1,37 @@
+name: K6 Performance Test
+
+on:
+  # Chạy thủ công
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'URL to test'
+        required: true
+        default: 'https://ktpm-backend.onrender.com'
+  
+  # Hoặc chạy sau khi deploy thành công
+  # workflow_run:
+  #   workflows: ["Deploy"]
+  #   types:
+  #     - completed
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run Load Test
+        run: k6 run -e BASE_URL=${{ github.event.inputs.target_url || 'https://ktpm-backend.onrender.com' }} k6/scripts/load-test.js
+
+      - name: Run API Test
+        run: k6 run -e BASE_URL=${{ github.event.inputs.target_url || 'https://ktpm-backend.onrender.com' }} k6/scripts/api-test.js
