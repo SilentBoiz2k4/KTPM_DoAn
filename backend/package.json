@@ -15,6 +15,7 @@
     "test:unit:order": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit/order.test.js",
     "test:unit:cart": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit/cart.test.js",
     "test:unit:payment": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit/payment.test.js",
+    "test:unit:product": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/unit/product.test.js",
     "test:int:order": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration/order.integration.test.js",
     "test:int:cart": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration/cart.integration.test.js",
     "test:int:checkout": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/integration/checkout.integration.test.js",
