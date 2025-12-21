@@ -257,7 +257,7 @@ describe('Order API Tests - PASS', () => {
 // Uncomment phan nay khi demo test FAILED
 // ============================================
 
-/*
+
 describe('Security Tests - FAILED (Demo Bug)', () => {
   let adminUser, regularUser, otherUser, testProduct;
   let adminToken, userToken, otherUserToken;
@@ -363,4 +363,3 @@ describe('Security Tests - FAILED (Demo Bug)', () => {
     expect(res.status).toBe(400);
   });
 });
-*/
