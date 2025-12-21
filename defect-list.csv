@@ -1,0 +1,9 @@
+Defect ID,Defect Description & Steps to reproduce,Actual Result,Expected Result,Priority,Severity,Testcase ID
+BUG-001,Password duoc include trong JWT Token,,,,,
+,Steps: 1. Tao user voi password secret123 2. Goi ham generateToken(user) 3. Decode JWT token 4. Kiem tra decoded.password,decoded.password = secret123,decoded.password = undefined,P1,Critical,BUG-001
+BUG-002,IDOR - User co the thanh toan don hang cua nguoi khac,,,,,
+,Steps: 1. User A tao don hang 2. User B goi PUT /api/orders/{orderA_id}/pay voi token cua User B,Response status 200 - Thanh toan thanh cong,Response status 403 Forbidden,P1,Critical,BUG-002
+BUG-003,Cho phep tao don hang voi gia am (negative price),,,,,
+,Steps: 1. Dang nhap user 2. Goi POST /api/orders voi totalPrice = -100000,Response status 201 - Don hang duoc tao,Response status 400 Bad Request,P2,Medium,BUG-003
+BUG-004,Cho phep thanh toan lai don hang da thanh toan,,,,,
+,Steps: 1. Tao don hang voi isPaid = true 2. Goi PUT /api/orders/{id}/pay lan nua,Response status 200 - Payment bi ghi de,Response status 400 - Order already paid,P2,High,BUG-004
