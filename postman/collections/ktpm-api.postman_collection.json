@@ -55,9 +55,8 @@
                   "    pm.expect(jsonData).to.be.an('array');",
                   "});",
                   "",
-                  "// Skip response time check for cold start scenarios",
                   "pm.test('Response time is acceptable', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -157,7 +156,6 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "// 200: success, 400: validation error, 500: duplicate email (MongoDB)",
                   "pm.test('Signup endpoint responds correctly', function () {",
                   "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 500]);",
                   "});",
@@ -172,7 +170,6 @@
                   "",
                   "if (pm.response.code === 500) {",
                   "    pm.test('Duplicate email error', function () {",
-                  "        // Expected when user already exists",
                   "        console.log('User already exists - this is expected in repeated tests');",
                   "    });",
                   "}"
@@ -279,185 +276,6 @@
               "raw": "{{baseUrl}}/api/cart",
               "host": ["{{baseUrl}}"],
               "path": ["api", "cart"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Intentional Failures (Demo CI)",
-      "item": [
-        {
-          "name": "FAIL - Non-existent Endpoint",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// TEST CASE 1: Gọi endpoint không tồn tại",
-                  "// Mong đợi: 200 (nhưng thực tế sẽ trả về 404)",
-                  "// Lý do fail: Endpoint /api/nonexistent không tồn tại trong backend",
-                  "pm.test('FAIL - Endpoint should return 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/nonexistent",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "nonexistent"]
-            }
-          }
-        },
-        {
-          "name": "FAIL - Invalid Login Credentials",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// TEST CASE 2: Đăng nhập với thông tin sai",
-                  "// Mong đợi: 200 với token (nhưng thực tế sẽ trả về 401)",
-                  "// Lý do fail: Email/password không đúng, server trả về 401 Unauthorized",
-                  "pm.test('FAIL - Login should succeed', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('FAIL - Response should have token', function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('token');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"wrong@email.com\",\n  \"password\": \"wrongpassword\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/signin",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "signin"]
-            }
-          }
-        },
-        {
-          "name": "FAIL - Unauthorized Access",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// TEST CASE 3: Truy cập admin endpoint không có quyền",
-                  "// Mong đợi: 200 với danh sách users (nhưng thực tế sẽ trả về 401/403)",
-                  "// Lý do fail: Không có token hoặc token không phải admin",
-                  "pm.test('FAIL - Should access admin endpoint', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('FAIL - Response should be array of users', function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.be.an('array');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer invalid_token_here" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/users",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users"]
-            }
-          }
-        },
-        {
-          "name": "FAIL - Invalid Product ID",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// TEST CASE 4: Lấy product với ID không hợp lệ",
-                  "// Mong đợi: 200 với product data (nhưng thực tế sẽ trả về 404 hoặc 500)",
-                  "// Lý do fail: ID 'invalid123' không phải ObjectId hợp lệ của MongoDB",
-                  "pm.test('FAIL - Should return product', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('FAIL - Response should have product name', function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('name');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/products/invalid123",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "products", "invalid123"]
-            }
-          }
-        },
-        {
-          "name": "FAIL - Missing Required Fields",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// TEST CASE 5: Đăng ký thiếu trường bắt buộc",
-                  "// Mong đợi: 200 với user data (nhưng thực tế sẽ trả về 400/500)",
-                  "// Lý do fail: Thiếu trường 'name' và 'password' bắt buộc",
-                  "pm.test('FAIL - Signup should succeed', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('FAIL - Response should have user id', function () {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('_id');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"incomplete@test.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/users/signup",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "users", "signup"]
             }
           }
         }

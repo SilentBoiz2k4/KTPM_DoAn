@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "KTPM API Tests - FAILED Demo",
+    "_postman_id": "ktpm-api-failed-demo",
+    "description": "Collection nay dung de demo test FAILED - KHONG chay trong CI/CD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Intentional Failures (Demo)",
+      "item": [
+        {
+          "name": "FAIL - Non-existent Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// TEST CASE 1: Goi endpoint khong ton tai",
+                  "// Mong doi: 200 (nhung thuc te se tra ve 404)",
+                  "// Ly do fail: Endpoint /api/nonexistent khong ton tai trong backend",
+                  "pm.test('FAIL - Endpoint should return 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nonexistent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nonexistent"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - Invalid Login Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// TEST CASE 2: Dang nhap voi thong tin sai",
+                  "// Mong doi: 200 voi token (nhung thuc te se tra ve 401)",
+                  "// Ly do fail: Email/password khong dung, server tra ve 401 Unauthorized",
+                  "pm.test('FAIL - Login should succeed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('FAIL - Response should have token', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wrong@email.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/signin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "signin"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - Unauthorized Access",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// TEST CASE 3: Truy cap admin endpoint khong co quyen",
+                  "// Mong doi: 200 voi danh sach users (nhung thuc te se tra ve 401/403)",
+                  "// Ly do fail: Khong co token hoac token khong phai admin",
+                  "pm.test('FAIL - Should access admin endpoint', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('FAIL - Response should be array of users', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer invalid_token_here" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "FAIL - Invalid Product ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// TEST CASE 4: Lay product voi ID khong hop le",
+                  "// Mong doi: 200 voi product data (nhung thuc te se tra ve 404 hoac 500)",
+                  "// Ly do fail: ID 'invalid123' khong phai ObjectId hop le cua MongoDB",
+                  "pm.test('FAIL - Should return product', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('FAIL - Response should have product name', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/invalid123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "invalid123"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
